@@ -1,5 +1,7 @@
 # CinePicks — Chat Rekomendasi Film
 
+![Logo CinePicks](static/logo.png)
+
 Aplikasi web sederhana untuk mencari dan merekomendasikan film dari dataset
 **Top Movies dataset.csv** (9.837 judul). Mendukung chat teks (Indonesia/Inggris),
 filter genre/mood/tahun/negara, rekomendasi film serupa, serta **upload foto**
@@ -7,6 +9,41 @@ yang "dibaca" dengan OCR dan analisis warna untuk menghasilkan rekomendasi.
 
 Dibangun dengan **Python standard library** (tanpa framework) di backend dan
 **HTML/CSS/JavaScript vanilla** di frontend — ringan, cepat, tanpa `pip install`.
+
+---
+
+## Alur Aplikasi
+
+```
+PENGGUNA
+   │
+   │  mengetik query / mengunggah foto poster
+   ▼
+┌─────────────────────┐      POST /api/chat      ┌──────────────────────────┐
+│   FRONTEND          │ ───────────────────────► │  BACKEND (server.py)     │
+│   index.html        │      POST /api/upload    │  ThreadingHTTPServer     │
+│   app.js + style.css│                          │  - rate limit per IP     │
+└─────────────────────┘                          │  - validasi input        │
+   ▲                                             └───────────┬──────────────┘
+   │                                                         │
+   │  reply + movies[] (kartu film: poster, rating,          ▼
+   │  alasan rekomendasi, deskripsi)              ┌──────────────────────────┐
+   └────────────────────────────────────────────── │  ENGINE (engine.py)      │
+                                                   │  1. Intent parsing (ID/EN)│
+                                                   │     genre/mood/negara/   │
+                                                   │     tahun/judul          │
+                                                   │  2. SEARCHING: BM25      │
+                                                   │  3. DECISION: scoring    │
+                                                   └───────────┬──────────────┘
+                                                               │  (jika upload foto)
+                                                               ▼
+                                                   ┌──────────────────────────┐
+                                                   │  VISION (vision.py)      │
+                                                   │  - tesseract OCR -> judul │
+                                                   │  - ImageMagick -> warna  │
+                                                   │  - inferensi mood/genre  │
+                                                   └──────────────────────────┘
+```
 
 ---
 
