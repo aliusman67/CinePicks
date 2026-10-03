@@ -1,0 +1,21 @@
+<svg class="mark" viewBox="14 14 114 86" width="1140" height="860" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Logomark Cinepicks">
+  <defs><clipPath id="cpClip16"><rect x="-35" y="-12" width="70" height="24" rx="5"/></clipPath></defs>
+  <g class="board-anim">
+    <g transform="translate(40.7 50.45) rotate(69.54)">
+      <rect x="-26" y="-12" width="52" height="24" rx="5" fill="#181310"/>
+    </g>
+  </g>
+  <g class="arm">
+    <g transform="translate(87.8 53.4) rotate(-43.95)">
+      <g clip-path="url(#cpClip16)">
+        <rect x="-35" y="-12" width="70" height="24" fill="#181310"/>
+        <g stroke="#F2ECDF" stroke-width="5"><line x1="-31" y1="-17" x2="-40" y2="17"/><line x1="-18" y1="-17" x2="-27" y2="17"/><line x1="-5" y1="-17" x2="-14" y2="17"/><line x1="8" y1="-17" x2="-1" y2="17"/><line x1="21" y1="-17" x2="12" y2="17"/><line x1="34" y1="-17" x2="25" y2="17"/><line x1="47" y1="-17" x2="38" y2="17"/></g>
+      </g>
+      <rect x="-35" y="-12" width="70" height="24" rx="5" fill="none" stroke="#181310" stroke-width="1"/>
+    </g>
+  </g>
+  <g class="pivot">
+    <circle cx="54" cy="86" r="7" fill="#E03A1F"/>
+    <circle cx="54" cy="86" r="2.4" fill="#F2ECDF"/>
+  </g>
+</svg>
