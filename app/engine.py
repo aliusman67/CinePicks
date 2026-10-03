@@ -334,8 +334,15 @@ class MovieEngine:
             nt = m.norm_title
             if len(nt) < min_len:
                 continue
-            if nt in q or q in nt:
-                score = len(nt) / max(len(q), 1)
+            if nt in q:
+                # Judul muncul utuh di dalam teks (umum di hasil OCR).
+                # Skor naik seiring panjang judul agar judul lebih panjang menang.
+                score = min(0.95, 0.6 + 0.02 * len(nt)) if len(nt) >= 5 else len(nt) / max(len(q), 1)
+                if score > best_score:
+                    best, best_score = m, score
+            elif q in nt:
+                # Query adalah bagian dari judul, mis. "endgame" -> "Avengers: Endgame".
+                score = min(0.9, 0.5 + 0.02 * len(q)) if len(q) >= 5 else len(q) / max(len(nt), 1)
                 if score > best_score:
                     best, best_score = m, score
         if best and best_score >= 0.5:
@@ -362,6 +369,54 @@ class MovieEngine:
         if best and best_score >= 0.72:
             return best, best_score
         return None, 0.0
+
+    def find_title_ocr(self, text):
+        """Pencocokan judul untuk teks OCR yang berisik.
+
+        Strategi:
+          1) Coba find_title per baris, lalu teks utuh.
+          2) Jika gagal, pakai token overlap: kumpulkan kandidat judul dari token
+             OCR yang muncul di judul, lalu pilih yang cakupan token judulnya >= 50%
+             dengan skor kualitas tertinggi.
+        """
+        best, best_score = None, 0.0
+        candidates = [ln.strip() for ln in (text or "").splitlines() if len(ln.strip()) >= 4]
+        candidates.append((text or "").strip())
+        for cand in candidates:
+            if not cand:
+                continue
+            m, s = self.find_title(cand)
+            if m and s > best_score:
+                best, best_score = m, s
+        if best and best_score >= 0.6:
+            return best, best_score
+
+        toks = [t for t in tokenize(text) if len(t) >= 4]
+        if not toks:
+            return None, 0.0
+        cand_count = Counter()
+        for t in toks:
+            for doc_id in self.title_tokens.get(t, ()):
+                cand_count[doc_id] += 1
+        if not cand_count:
+            return None, 0.0
+
+        scored = []
+        for doc_id, overlap in cand_count.items():
+            m = self.movies[doc_id]
+            title_toks = [t for t in tokenize(m.title) if len(t) >= 4]
+            if not title_toks:
+                continue
+            coverage = overlap / len(title_toks)
+            if coverage < 0.5:
+                continue
+            quality = self.quality_score(m)
+            score = 0.55 * coverage + 0.30 * quality + 0.10 * min(overlap, 3)
+            scored.append((score, m))
+        if not scored:
+            return None, 0.0
+        scored.sort(key=lambda x: -x[0])
+        return scored[0][1], scored[0][0]
 
     # ------------------------------------------------------------ rekomendasi
     def similar_to(self, movie, genres=None, year=None, limit=5, offset=0):

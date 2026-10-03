@@ -138,10 +138,10 @@ def recommend_from_photo(path, engine):
         "movies": [],
     }
 
-    # 1) Coba cocokkan teks OCR dengan judul film
+    # 1) Coba cocokkan teks OCR dengan judul film (toleran terhadap noise OCR)
     matched = None
     if text:
-        matched, score = engine.find_title(text)
+        matched, score = engine.find_title_ocr(text)
 
     if matched:
         recs = engine.similar_to(matched, limit=5)

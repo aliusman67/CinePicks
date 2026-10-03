@@ -39,6 +39,26 @@ class TestEngineBasics(unittest.TestCase):
         if m is not None:
             self.assertNotEqual(m.title, "G-Zombie")
 
+    def test_find_title_partial(self):
+        # "endgame" harus cocok dengan "Avengers: Endgame"
+        m, _ = self.engine.find_title("endgame")
+        self.assertIsNotNone(m)
+        self.assertEqual(m.title, "Avengers: Endgame")
+
+    def test_find_title_ocr_noisy(self):
+        # Teks OCR berisik yang hanya memuat kata ENDGAME
+        noise = "i~ N ,',@\\\\ > AN W 2\\\\ S50 NS = 4 T W X N Gl %\\\\/ P el 7ag % 2 &3 2 A B W N \" [~ ENDGAME"
+        m, score = self.engine.find_title_ocr(noise)
+        self.assertIsNotNone(m)
+        self.assertEqual(m.title, "Avengers: Endgame")
+        self.assertGreater(score, 0.5)
+
+    def test_find_title_embedded_in_long_text(self):
+        # Judul lengkap di dalam teks panjang (mis. poster dengan teks tambahan)
+        m, _ = self.engine.find_title("MARVEL STUDIOS AVENGERS ENDGAME APRIL 26")
+        self.assertIsNotNone(m)
+        self.assertEqual(m.title, "Avengers: Endgame")
+
 
 class TestIntents(unittest.TestCase):
     @classmethod
