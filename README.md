@@ -1,6 +1,6 @@
 # CinePicks — Chat Rekomendasi Film
 
-![Logo CinePicks](static/logo.png)
+![Logo CinePicks](static/logo.svg)
 
 Aplikasi web sederhana untuk mencari dan merekomendasikan film dari dataset
 **Top Movies dataset.csv** (9.837 judul). Mendukung chat teks (Indonesia/Inggris),
